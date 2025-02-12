@@ -88,7 +88,7 @@ DATABASES = {'default' :{
         'NAME': 'main',
         'USER': 'tawsif',
         'PASSWORD': '123',
-        'HOST': '172.24.0.2',  # Matches the service name in docker-compose.yml
+        'HOST': '172.25.0.2',  # Matches the service name in docker-compose.yml
         'PORT': '5432',
     }
 }
