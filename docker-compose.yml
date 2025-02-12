@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgres://tawsif:123@172.21.0.2:5432/main
+    ports: 
+       - 8002:8000
+    volumes:
+       - .:/app
+    networks:
+      - app_network
+      - rabbitmq_microservice_rabbitmq_network
+    depends_on:
+      - main_db
+  main_db:
+    image: postgres:latest
+    container_name: django_main_postgres_db
+    restart: always
+    environment:
+      - POSTGRES_USER=tawsif
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=main
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    
+
+networks:
+  app_network:
+    driver: bridge
+  rabbitmq_microservice_rabbitmq_network:
+    external: true

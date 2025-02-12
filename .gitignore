@@ -1,0 +1,16 @@
+/env
+/postgres_data
+
+# Ignore build artifacts
+*.log
+*.tmp
+*.pid
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+
+# Ignore Docker-related files
+docker-compose.override.yml
+.env
