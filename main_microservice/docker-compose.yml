@@ -1,23 +1,28 @@
 version: '3.8'
 services:
   backend:
+    container_name: main-backend-1
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgres://tawsif:123@172.21.0.2:5432/main
+      - DATABASE_URL=postgres://tawsif:123@main_db:5432/main
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=tawsif
+      - RABBITMQ_PASSWORD=123
     ports: 
        - 8002:8000
     volumes:
        - .:/app
     networks:
-      - app_network
-      - rabbitmq_microservice_rabbitmq_network
+      - main_network
+      - rabbitmq_network
     depends_on:
       - main_db
   main_db:
     image: postgres:latest
-    container_name: django_main_postgres_db
+    container_name: main_db
     restart: always
     environment:
       - POSTGRES_USER=tawsif
@@ -28,11 +33,11 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     networks:
-      - app_network
+      - main_network
     
 
 networks:
-  app_network:
+  main_network:
     driver: bridge
-  rabbitmq_microservice_rabbitmq_network:
+  rabbitmq_network:
     external: true

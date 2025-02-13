@@ -83,12 +83,15 @@ WSGI_APPLICATION = 'main_microservice.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+
+
 DATABASES = {'default' :{
     'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'main',
         'USER': 'tawsif',
         'PASSWORD': '123',
-        'HOST': '172.25.0.2',  # Matches the service name in docker-compose.yml
+        'HOST': 'main_db',  # Matches the service name in docker-compose.yml
         'PORT': '5432',
     }
 }
@@ -96,7 +99,7 @@ DATABASES = {'default' :{
 
 
 # Celery Configuration
-CELERY_BROKER_URL = 'pyamqp://tawsif:123@172.20.0.2:5672'  # RabbitMQ broker URL
+CELERY_BROKER_URL = 'pyamqp://tawsif:123@rabbitmq:5672'  # RabbitMQ broker URL
 CELERY_RESULT_BACKEND = 'rpc://'  # Optional: for storing task results
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

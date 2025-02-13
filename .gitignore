@@ -1,5 +1,5 @@
 /env
-/postgres_data
+/main_microservice/postgres_data
 
 # Ignore build artifacts
 *.log
