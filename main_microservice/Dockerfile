@@ -16,5 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy the local directory into the docker directory
 COPY . /app
 
-# The docker will run this command on activation
-CMD python manage.py runserver 0.0.0.0:8000
+
+RUN chmod +x start.sh
+
+# Set CMD to execute the start.sh script when the container starts
+CMD ["./start.sh"]
