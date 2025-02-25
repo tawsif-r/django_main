@@ -7,10 +7,66 @@ from rest_framework import viewsets,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Products, Customer
-from .serializers import CustomerSerializer
+from .serializers import CustomerSerializer,ProductSerializer
 from .publish import *
 
+# Create your views here.
+class ProductViewset(viewsets.ViewSet):
+    def list(self, request): # api/products
+        products = Products.objects.all()
+        serializer = ProductSerializer(products,many = True)
+        return Response(serializer.data)
+    
 
+
+    def create(self, request): # api/products
+        serializer = ProductSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        product_instance = serializer.save()
+        product_data = {
+            'id': product_instance.id,
+            'title': product_instance.title,
+            'image': product_instance.image 
+        }
+        # publish_message("products_exchange","products.create",product_data)
+        return Response(serializer.data,status=status.HTTP_201_CREATED) 
+    
+
+
+
+    def retrieve(self, request, pk = None): # api/products/<str:id>
+        product = Products.objects.get(id = pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+
+
+
+    def update(self, request, pk = None): # api/products/<str:id>
+        product = Products.objects.get(id=pk)
+        serializer = ProductSerializer(instance = product, data = request.data)
+        serializer.is_valid(raise_exception=True)
+        product_instance = serializer.save()
+        product_data ={
+            'id' : product_instance.id,
+            'title' : product_instance.title,
+            'image' : product_instance.image
+        }
+        # publish_message("products_exchange","products.update",product_data)
+        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+    
+
+
+
+    def destroy(self, request, pk = None): 
+        product = Products.objects.get(id = pk)
+        product.delete()
+        data = {
+            'id' : pk
+        }
+        # publish_message("products_exchange","products.delete",data)
+        return Response(status= status.HTTP_204_NO_CONTENT)
+    
 # Create your views here.
 class CustomerViewset(viewsets.ViewSet):
     def list(self, request): # api/products
@@ -75,30 +131,3 @@ def index(request):
 
 
 
-"""Task assign for consumer"""
-
-def create_product(request):
-    if request.method == 'POST':
-        data = {
-            'id': request.POST.get('id'),
-            'title': request.POST.get('title'),
-            'image': request.POST.get('image')
-        }
-        process_create.delay(data)  # Call the Celery task asynchronously
-        return JsonResponse({'status': 'Product creation task queued'})
-
-def update_product(request):
-    if request.method == 'POST':
-        data = {
-            'id': request.POST.get('id'),
-            'title': request.POST.get('title'),
-            'image': request.POST.get('image')
-        }
-        process_update.delay(data)  # Call the Celery task asynchronously
-        return JsonResponse({'status': 'Product update task queued'})
-
-def delete_product(request):
-    if request.method == 'POST':
-        data = {'id': request.POST.get('id')}
-        process_delete.delay(data)  # Call the Celery task asynchronously
-        return JsonResponse({'status': 'Product deletion task queued'})
